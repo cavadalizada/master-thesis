@@ -65,7 +65,6 @@ global newApp
 newApp = False
 
 def release_rate_of_today(today):
-    return 1
     global newApp
     if newApp:
         return 0.7
@@ -134,7 +133,7 @@ def release_rate_of_today(today):
 
 
 skill = 70
-avg_nb_of_attackers_per_day = 43.80558 / 365
+avg_nb_of_attackers_per_day = 42.84112 / 365
 
 # Define initial CPDs
 cpd_e_store = TabularCPD(variable='E-store', variable_card=2, values=[[0], [1]])

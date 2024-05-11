@@ -59,7 +59,7 @@ def rate_of_today(today):
     return (normalized_2023[get_month_from_day(today)-1]+1) * (weekdays_normalized_2023[todays_weekday(today)] + 1)
 
 skill = 25
-avg_nb_of_attackers_per_day = 8.65017 / 365
+avg_nb_of_attackers_per_day = 13.05923 / 365
 
 # Defining Conditional Probability Tables (CPTs)
 # Probabilities for E-store being compromised

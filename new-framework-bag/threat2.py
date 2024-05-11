@@ -14,7 +14,7 @@ model = BayesianNetwork([
     ('Tool Server', 'Database')                   # Tool Server leads directly to Database compromise
 ])
 skill = 25
-avg_nb_of_attackers = 8.65017
+avg_nb_of_attackers = 13.09532
 # Defining Conditional Probability Tables (CPTs)
 # Probabilities for E-store being compromised
 cpd_inv_app = TabularCPD(variable='Inventory App', variable_card=2, 

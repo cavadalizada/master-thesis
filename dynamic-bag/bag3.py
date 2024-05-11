@@ -61,7 +61,7 @@ def rate_of_today(today):
     return (normalized_2023[get_month_from_day(today)-1]+1) * (weekdays_normalized_2023[todays_weekday(today)] + 1)
 
 skill = 90
-avg_nb_of_attackers_per_day = 42.09721 / 365
+avg_nb_of_attackers_per_day = 40.63867 / 365
 
 # Define initial CPDs
 cpd_e_store = TabularCPD(variable='E-store', variable_card=2, values=[[0], [1]])
@@ -173,7 +173,7 @@ print(f"Probability of event occuring in Q3: {prob_at_least_one_event_q3:.4f}")
 print(f"Probability of event occuring in Q4: {prob_at_least_one_event_q4:.4f}")
 
 # Debugging output of the final probability
-print(f"At least once: {prob_at_least_one_event_multiple_attackers:.50f}")
+print(f"Events per year: {prob_at_least_one_event_multiple_attackers:.50f}")
 
 # Plotting the daily probabilities
 plt.figure(figsize=(20, 10))

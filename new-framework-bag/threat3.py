@@ -15,28 +15,29 @@ model = BayesianNetwork([
     ('Tool Server', 'Database')                   # Tool Server leads directly to Database compromise
 ])
 skill = 90
-avg_nb_of_attackers = 42.09721
+avg_nb_of_attackers = 40.07549
 # Defining Conditional Probability Tables (CPTs)
 # Probabilities for E-store being compromised
 cpd_e_store = TabularCPD(variable='E-store', variable_card=2, 
                          values=[[0], [1]])  # 99% chance not compromised, 1% chance compromised
-
+print(cpd_e_store)
 # Probabilities for Company Website being compromised
 cpd_website = TabularCPD(variable='Company Website', variable_card=2, 
                          values=[[0], [1]])  # 99% chance not compromised, 1% chance compromised
+print(cpd_website)
 
+# Probabilities for Web-Server being compromised given E-store is compromised
+cpd_web_server = TabularCPD(variable='Web-Server', variable_card=2,
+                            values=[[1, 1-(1/146+1/730), 1-skill/5000, 1-max(1/146+1/730,skill/5000)],  # Not compromised if E-store and Company Website is not compromised
+                                    [0, 1/146+1/730, skill/5000, max(1/146+1/730,skill/5000)]],  # skill/5000 chance of being compromised if E-store is compromised 1/146 + 1/730 chance if company website is compromised
+                            evidence=['E-store','Company Website'], evidence_card=[2, 2])
+print(cpd_web_server)
 # Probabilities for Inventory Processor being compromised given E-store is compromised
 cpd_inventory_processor = TabularCPD(variable='Inventory Processor', variable_card=2,
                                      values=[[1,1-(1/100+1/73), 1-skill/4000, 1- max(skill/4000,(1/100+1/73))],  # Not compromised if E-store is not compromised
                                              [0,1/100+1/73, skill/4000, max(skill/4000,(1/100+1/73))]],  # 5% chance of being compromised if E-store is compromised
                                      evidence=['E-store', 'Web-Server'], evidence_card=[2,2])
 print(cpd_inventory_processor)
-# Probabilities for Web-Server being compromised given E-store is compromised
-cpd_web_server = TabularCPD(variable='Web-Server', variable_card=2,
-                            values=[[1, 1-(1/146+1/730), 1-skill/5000, 1-max(1/146+1/730,skill/5000)],  # Not compromised if E-store and Company Website is not compromised
-                                    [0, 1/146+1/730, skill/5000, max(1/146+1/730,skill/5000)]],  # skill/5000 chance of being compromised if E-store is compromised 1/146 + 1/730 chance if company website is compromised
-                            evidence=['E-store','Company Website'], evidence_card=[2, 2])
-
 # Probabilities for Tool Server being compromised
 cpd_tool_server = TabularCPD(variable='Tool Server', variable_card=2,
                              values=[[1, 1-skill/4000],  # Not compromised if Inventory Processor not compromised
@@ -54,7 +55,7 @@ cpd_database = TabularCPD(variable='Database', variable_card=2,
                           evidence=['Tool Server', 'Inventory Processor'],
                           evidence_card=[2, 2])
 # USE THE TABLE BELOW TO MAKE SENSE OF DATABASE CPD
-#Tool Server  Inventory Processo	P(Database=False)	P(Database=True)
+#Tool Server  Inventory Processor	P(Database=False)	P(Database=True)
 #     0              0	               1	                0
 #     0	             1	               1-~	                skill/3000
 #     1              0	               1-~	                1/100 + 1/73
@@ -70,7 +71,6 @@ inference = VariableElimination(model)
 
 # Calculating the probability of Database being compromised
 prob_database = inference.query(variables=['Database'])
-print(prob_database)
 
 print("Number of events per year : avg_number_of_attackers x success of one attack = ", prob_database.get_value(Database=1) * avg_nb_of_attackers)
 
@@ -92,4 +92,4 @@ pos = nx.spring_layout(G)  # Or use another layout algorithm
 
 nx.draw(G, pos, with_labels=True, node_color=node_colors)
 plt.title("Bayesian Attack Graph with Probabilities")
-plt.savefig('bag3.png')
+plt.savefig('bag1.png')
