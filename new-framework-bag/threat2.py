@@ -28,8 +28,8 @@ cpd_workstation = TabularCPD(variable='Workstation', variable_card=2,
 print(cpd_workstation)
 # Probabilities for Web-Server being compromised given E-store is compromised
 cpd_inventory_processor = TabularCPD(variable='Inventory Processor', variable_card=2,
-                            values=[[1, 1 - (1/120 + 1/61), 1 - (skill/80), 1- max(1/120 + 1/61,skill/80)],  # Not compromised if E-store and Company Website is not compromised
-                                    [0, 1/120 + 1/61 , skill/80, max(1/120 + 1/61,skill/80)]],  # 100/5000 chance of being compromised if E-store is compromised 1/146 + 1/730 chance if company website is compromised
+                            values=[[1, 1 - (1/120 + 1/61), 1 - (skill/200), 1- max(1/120 + 1/61,skill/200)],  # Not compromised if E-store and Company Website is not compromised
+                                    [0, 1/120 + 1/61 , skill/200, max(1/120 + 1/61,skill/200)]],  # 100/5000 chance of being compromised if E-store is compromised 1/146 + 1/730 chance if company website is compromised
                             evidence=['Inventory App','Workstation'], evidence_card=[2, 2])
 print(cpd_inventory_processor)
 #Inventory App  Workstation	P(Inv Processor=False)	   P(Inv Processor=True)
@@ -50,7 +50,7 @@ print(cpd_tool_server)
 cpd_database = TabularCPD(variable='Database', variable_card=2,
                           values=[
                               # The first entry is the probability of Database being not compromised if all parents are not compromised
-                              [1, 1-skill/3000, 1-(1/100+1/73), 1-max(skill/3000,1/100+1/73)],  
+                              [1, 1-skill/3000, 1-(1/200+1/73), 1-max(skill/3000,1/100+1/73)],  
                               # The second entry is the probability of Database being compromised if any parent is compromised
                               [0, skill/3000, (1/100+1/73), max(skill/3000,1/100+1/73)]],  
                           evidence=['Tool Server', 'Inventory Processor'],
@@ -73,6 +73,7 @@ inference = VariableElimination(model)
 
 # Calculating the probability of Database being compromised
 prob_database = inference.query(variables=['Database'])
+print(prob_database)
 
 print("Number of events per year : avg_number_of_attackers x success of one attack = ", prob_database.get_value(Database=1) * avg_nb_of_attackers)
 

@@ -80,8 +80,8 @@ for day in range(365):
                                         evidence=['Inventory App'], evidence_card=[2])
     # Inventory Processor CPD
     cpd_inventory_processor = TabularCPD(variable='Inventory Processor', variable_card=2,
-                                values=[[1, 1 - rate_today * (1/120 + 1/61), 1 - (skill/80), 1- max(rate_today * (1/120 + 1/61),skill/80)],  # Not compromised if E-store and Company Website is not compromised
-                                        [0, rate_today * (1/120 + 1/61) , skill/80, max(rate_today * (1/120 + 1/61),skill/80)]],  # 100/5000 chance of being compromised if E-store is compromised 1/146 + 1/730 chance if company website is compromised
+                                values=[[1, 1 - rate_today * (1/120 + 1/61), 1 - (skill/200), 1- max(rate_today * (1/120 + 1/61),skill/200)],  # Not compromised if E-store and Company Website is not compromised
+                                        [0, rate_today * (1/120 + 1/61) , skill/200, max(rate_today * (1/120 + 1/61),skill/200)]],  # 100/5000 chance of being compromised if E-store is compromised 1/146 + 1/730 chance if company website is compromised
                                 evidence=['Inventory App','Workstation'], evidence_card=[2, 2])
 
     # Tool Server CPD
@@ -153,7 +153,7 @@ print(f"Probability of event occuring in Q3: {prob_at_least_one_event_q3:.4f}")
 print(f"Probability of event occuring in Q4: {prob_at_least_one_event_q4:.4f}")
 
 # Debugging output of the final probability
-print(f"At least once : {prob_at_least_one_event_multiple_attackers:.50f}")
+print(f"Events per year: {prob_at_least_one_event_multiple_attackers:.50f}")
 
 # Plotting the daily probabilities
 plt.figure(figsize=(10, 5))

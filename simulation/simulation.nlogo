@@ -14,7 +14,6 @@ globals [
   threatEvent1
   threatEvent2
   threatEvent3
-  listOfPatchingNodes
   isStatic
   weekdays-normalized-2023
   normalized-2023
@@ -56,7 +55,8 @@ turtles-own [
   functionalityRunningAsHigherPriv
   BreakOutFromDesktopApp
   revealOtherAppExploitationRate
-  BreakOutFromDesktopAppFunctionality
+  revealOtherAppFunc
+  BreakOutFromDesktopAppFunc
 ]
 breed [servers server]
 breed [databases database]
@@ -86,7 +86,6 @@ attackers-own [
 ]
 
 to setup
-
   set weekdays-normalized-2023 [0.02 0.373 0.711 0.265 0.241 0.072 0.8]
   set normalized-2023 [1.00 0.65 0.50 0.56 0.69 0.47 0.34 0.44 0.55 0.54 0.66 0.49]
   ;; create company
@@ -97,7 +96,7 @@ to setup
     set type1 "cloud"
     setxy 10 10
     set size 3
-    set isCustom false
+
     set shape "cloud"
 
     set isSource false;
@@ -109,8 +108,6 @@ to setup
     set type1 "server"
     setxy 4 4
     set size 3
-    set isCustom false
-
 
     set misconfigChance 100
     set globalCveChance 73
@@ -142,7 +139,7 @@ to setup
     set label "Database"
     set shape "db"
     set isSource false;
-    set isCustom false
+
 
     set accessLevels table:make
 
@@ -160,7 +157,6 @@ to setup
     set type1 "server"
     setxy 4 0
     set size 3
-    set isCustom false
 
     set accessLevels table:make
 
@@ -189,9 +185,7 @@ to setup
   create-applications 1 [
     set label "Backup Syncer"
 
-    set misconfigChance 250
-
-    set isCustom false
+    set misconfigChance 9999999999999 ;; irrelevant node
 
     set type1 "app"
     setxy 9 2
@@ -214,8 +208,8 @@ to setup
 
     set isCustom true
     set programmingTechnology "Bash"
-    set SQLIexploitationRate 1 / 300000 ;; 1 in 3000 for 100 skilled
-    set RCEexploitationRate 1 / 400000 ;; 1 in 4000
+    set SQLIexploitationRate 1 / 9999999999999 ;; 999999999999
+    set RCEexploitationRate 1 / 99999999999999 ;; 999999999999
     set functionalityConnectsToOtherApp false
     set functionalityConnectsToDatabase true
     set functionalityFileUpload true
@@ -258,8 +252,8 @@ to setup
 
     set isCustom true
     set programmingTechnology "PHP"
-    set SQLIexploitationRate 1 / 300000 ;; 1 in 3000 chance for there to be sqli here
-    set RCEexploitationRate 1 / 400000 ;; 1 in 4000 chance for there to be rce here
+    set SQLIexploitationRate 1 / 3000 ;; 1 in 3000 chance for there to be sqli here
+    set RCEexploitationRate 1 / 4000 ;; 1 in 4000 chance for there to be rce here
 
     set functionalityConnectsToOtherApp false
     set functionalityConnectsToDatabase true
@@ -300,9 +294,9 @@ to setup
 
     set knownVulnerabilities table:make
 
-    set misconfigChance 100
-    set globalCveChance 73
-    set isCustom false;
+     set misconfigChance 100
+     set globalCveChance 73
+
     set shape "Server"
     set isSource false;
 
@@ -334,7 +328,7 @@ to setup
 
 
     set shape "pc"
-    set isCustom false;
+
     set isSource false;
 
     create-network-connections-with servers with [label = "Tool Server"] [
@@ -363,12 +357,12 @@ to setup
 
     set isCustom true
     set programmingTechnology ".NET"
-    set functionalityConnectsToOtherApp true
-    set BreakOutFromDesktopAppFunctionality true
-    set revealOtherAppExploitationRate 1 / 80 ;; 1 in 80 chance
+    set revealOtherAppExploitationRate 1 / 200;; 1 in 200 chance
     set BreakOutFromDesktopApp 1 / 60 ;; 1 in 60 chance
-    set functionalityRunningAsHigherPriv false
-    set misconfigChance 150 ;; 1 in 100
+    set revealOtherAppFunc true
+    set BreakOutFromDesktopAppFunc true
+
+    set misconfigChance 300 ;; 1 in 300
 
     set shape "app"
 
@@ -411,8 +405,8 @@ to setup
     set isCustom true
     set programmingTechnology "PHP"
 
-    set RCEexploitationRate 1 / 500000 * release-rate-of-today ;; 1 in 5000 chance for rce
-    set SSRFexploitationRate 1 / 400000 * release-rate-of-today;; 1 in 4000 cance for ssrf
+    set RCEexploitationRate 1 / 5000 * release-rate-of-today ;; 1 in 5000 chance for rce
+    set SSRFexploitationRate 1 / 4000 * release-rate-of-today;; 1 in 4000 cance for ssrf
     set functionalityFileUpload true
     set functionalityConnectsToOtherApp true
     set functionalityConnectsToDatabase false
@@ -471,14 +465,14 @@ to setup
     set type1 "app"
     setxy 0 -10
     set size 2
-
+    set misconfigChance 999999999999999 ;; irrelevant node
     set accessLevels table:make
 
     table:put accessLevels 1 "other_app"
     table:put accessLevels 2 "server"
 
-    set globalCveChance 1217  ;; 1 in 22 831 chance for a global cve to be found
-    set misconfigChance 912 ;; 1 in 1000 chance for a misconfig to happen here
+    set globalCveChance 99999999999999  ;; irrelevant node
+    set misconfigChance 99999999999999 ;; irrelevant node
 
     set isCustom false
 
@@ -718,6 +712,15 @@ to exploitMisconfigs [copyOfMisConfigurations copyOfcurrentPrivilege copyOfskill
      addToExploitedMisconfigs copyOfattackerName label first table:keys filteredTable
      setCurrentPrivilege copyOfattackerName label 4
      ]
+   set filteredTable filter-rows-by-criteria copyOfMisConfigurations copyOfcurrentPrivilege copyOfskillLevel 5
+  if not is-table-empty filteredTable and not has-exploited-misconfig copyOfattackerName first table:keys filteredTable  [
+     let misconfig table:get copyOfMisConfigurations first table:keys filteredTable
+     table:put misconfig "TickCreated" ticks
+     table:put copyOfMisConfigurations first table:keys filteredTable misconfig
+     ;;show ( word copyOfattackerName " on " label " exploited " first table:keys filteredTable  )
+     addToExploitedMisconfigs copyOfattackerName label first table:keys filteredTable
+     setCurrentPrivilege copyOfattackerName label 5
+     ]
 end
 
 to exploitCVEs [copyOfknownVulnerabilities copyOfcurrentPrivilege copyOfskillLevel copyOfattackerName]
@@ -739,6 +742,12 @@ to exploitCVEs [copyOfknownVulnerabilities copyOfcurrentPrivilege copyOfskillLev
      ;;show ( word copyOfattackerName " on " label " exploited " first table:keys filteredTable  )
      addToExploitedCVEs copyOfattackerName label first table:keys filteredTable
      setCurrentPrivilege copyOfattackerName label 4
+     ]
+     set filteredTable filter-rows-by-criteria copyOfknownVulnerabilities copyOfcurrentPrivilege copyOfskillLevel 5
+   if not is-table-empty filteredTable and not has-exploited-cve copyOfattackerName first table:keys filteredTable  [
+     ;;show ( word copyOfattackerName " on " label " exploited " first table:keys filteredTable  )
+     addToExploitedCVEs copyOfattackerName label first table:keys filteredTable
+     setCurrentPrivilege copyOfattackerName label 5
      ]
 end
 
@@ -857,6 +866,57 @@ to expire-vulnerabilities-and-misconfigs [CopyOfknownVulnerabilities CopyOfpoten
 
 end
 
+to introduce-misconfigs
+  ;;show misconfigChance
+  if random misconfigChance / get_daily_rate = 0 [
+     let keys table:keys accessLevels
+     let midpoint length keys / 2
+
+    let lower_numbers sublist keys 0 midpoint
+    let upper_numbers sublist keys midpoint length keys
+
+    let random_lower one-of lower_numbers
+    let random_upper one-of upper_numbers
+    ;;show (word "Introducing Misconfig for " label)
+    create-and-add-misconfig-to-node label (40 + random 61) random_lower random_upper
+
+  ]
+
+
+end
+
+to introduce-cves
+
+  if random globalCveChance / get_daily_rate = 0 and isCustom != true [
+     let keys table:keys accessLevels
+     let midpoint length keys / 2
+
+    let lower_numbers sublist keys 0 midpoint
+    let upper_numbers sublist keys midpoint length keys
+
+    let random_lower one-of lower_numbers
+    let random_upper one-of upper_numbers
+    ;;show (word "Introducing CVE for " label)
+    create-and-add-cve-to-node label (40 + random 61) random_lower random_upper
+
+  ]
+
+
+end
+
+to update-vulnerabilities
+  ask turtles with [type1 != "attacker" and type1 != "database" and type1 != "cloud" and isSource != true] [
+      ; Expire old issues
+      expire-vulnerabilities-and-misconfigs knownVulnerabilities potentialMisconfigs
+
+      ;; Introduce misconfigs
+      introduce-misconfigs
+      ;; introduce cves found in other places
+      introduce-cves
+  ]
+end
+
+
 to-report month-from-tick
   ; Assuming the simulation starts in January and each month has 30 days
   report (ticks / 30) mod 12 + 1
@@ -921,108 +981,6 @@ to-report get_daily_rate
 end
 
 
-to introduce-misconfigs
-  ;;show misconfigChance
-  if random misconfigChance / get_daily_rate = 0 [
-     let keys table:keys accessLevels
-     let midpoint length keys / 2
-
-    let lower_numbers sublist keys 0 midpoint
-    let upper_numbers sublist keys midpoint length keys
-
-    let random_lower one-of lower_numbers
-    let random_upper one-of upper_numbers
-    ;;show (word "Introducing Misconfig for " label)
-    create-and-add-misconfig-to-node label (40 + random 61) random_lower random_upper
-
-  ]
-
-
-end
-
-to introduce-cves
-
-  if random globalCveChance / get_daily_rate = 0 and isCustom != true [
-     let keys table:keys accessLevels
-     let midpoint length keys / 2
-
-    let lower_numbers sublist keys 0 midpoint
-    let upper_numbers sublist keys midpoint length keys
-
-    let random_lower one-of lower_numbers
-    let random_upper one-of upper_numbers
-    ;;show (word "Introducing CVE for " label)
-    create-and-add-cve-to-node label (40 + random 61) random_lower random_upper
-
-  ]
-
-
-end
-
-to update-vulnerabilities
-  ask turtles with [type1 != "attacker" and type1 != "database" and type1 != "cloud" and isSource != true] [
-      ; Expire old issues
-      expire-vulnerabilities-and-misconfigs knownVulnerabilities potentialMisconfigs
-
-      ;; Introduce misconfigs
-      introduce-misconfigs
-      ;; introduce cves found in other places
-      introduce-cves
-  ]
-end
-
-to patch-vulnerabilities-and-misconfigs
-  ; Iterate through each turtle listed for patching
-  ask listOfPatchingNodes [
-    ; Assume 'knownVulnerabilities' and 'potentialMisconfigs' are agent variables
-
-    ; Calculate how many vulnerabilities and misconfigs to patch, rounding down
-    let numToPatchVulnerabilities floor (0.6 * table:length knownVulnerabilities)
-    let numToPatchMisconfigs floor (0.6 * table:length potentialMisconfigs)
-
-    ; Patch vulnerabilities if available
-    if numToPatchVulnerabilities > 0 [
-      let patchedVulnerabilities 0
-      foreach table:keys knownVulnerabilities [
-        [key] ->
-        if patchedVulnerabilities < numToPatchVulnerabilities [
-          let vulnerability table:get knownVulnerabilities key
-          table:put vulnerability "Exists" false
-          table:put knownVulnerabilities key vulnerability
-          set patchedVulnerabilities patchedVulnerabilities + 1
-        ]
-      ]
-    ]
-
-    ; Patch misconfigs if vulnerabilities are fully patched or not available
-    if (numToPatchVulnerabilities = 0 or table:length knownVulnerabilities <= numToPatchVulnerabilities) and numToPatchMisconfigs > 0 [
-      let patchedMisconfigs 0
-      foreach table:keys potentialMisconfigs [
-        [key] ->
-        if patchedMisconfigs < numToPatchMisconfigs [
-          let misconfig table:get potentialMisconfigs key
-          table:put misconfig "Exists" false
-          table:put potentialMisconfigs key misconfig
-          set patchedMisconfigs patchedMisconfigs + 1
-        ]
-      ]
-    ]
-
-    ; Update the turtle's own data with the patched tables
-    ; No need for table:put as agent variables knownVulnerabilities and potentialMisconfigs
-    ; are directly modified within the turtle's scope
-  ]
-end
-
-; Function to add a turtle to the listOfPatchingNodes by its label
-to add-to-patching-list [turtleLabel]
-  ; Find the turtle with the given label and add it to the list
-  let targetTurtle one-of turtles with [label = turtleLabel]
-  if targetTurtle != nobody [
-    set listOfPatchingNodes lput targetTurtle listOfPatchingNodes
-  ]
-end
-
 to exploit [skillLevel currentPrivilege attackerName]
    (ifelse
     type1 = "server" [
@@ -1036,54 +994,53 @@ to exploit [skillLevel currentPrivilege attackerName]
     ]
     type1 = "desktop-app" [
       (ifelse
-       isCustom = true [
-
-        ;; Check misconfigs
-        exploitMisconfigs potentialMisconfigs currentPrivilege skillLevel attackerName
-        ;; Check known vulnerabilities
-        exploitCVEs knownVulnerabilities currentPrivilege skillLevel attackerName
-
-        ;; app is custom has a random chance to be
-        let exploitChance 0
-        ;; Check if the attacker sees a connection to another app and tries to exploit it
-        (if functionalityConnectsToOtherApp [
-          set exploitChance (revealOtherAppExploitationRate * skillLevel) * 100000 ;; independent events
-          ;;show "RevealOtherApp"
-          ;;show skillLevel
-          ;;show exploitChance
-          if random 100000 < exploitChance [
-            if skillLevel < 81 [ ;; if attacker is not very skilled, they share the vulnerability with the world
-              create-and-add-cve-to-node label random skillLevel currentPrivilege 2
+        isCustom = true [
+          
+          ;; Check misconfigs
+          exploitMisconfigs potentialMisconfigs currentPrivilege skillLevel attackerName
+          ;; Check known vulnerabilities
+          exploitCVEs knownVulnerabilities currentPrivilege skillLevel attackerName
+          
+          ;; app is custom has a random chance to be
+          let exploitChance 0
+          if revealOtherAppFunc = true [
+            set exploitChance ( revealOtherAppExploitationRate * skillLevel ) / 100 ;; independent events
+            ifelse random-float 1 < exploitChance [
+              if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
+                create-and-add-cve-to-node label random skillLevel currentPrivilege 2
+              ]
+              ;;show ( word attackerName " on " label " exploited a custom PrivEsc vulnerability"  )
+              setCurrentPrivilege attackerName label 2  ; set priv to workstation
+            ][
+              ;;show ( word attackerName " on " label " FAILED to exploit a custom PrivEsc vulnerability"  )
             ]
-            ;;show ( word attackerName " on " label " exploited a custom PrivEsc vulnerability" )
-            setCurrentPrivilege attackerName label 2  ; set priv to workstation
           ]
-        ])
-
-        ;; Check if the attacker sees an opportunity to break out from a desktop application
-        (if BreakOutFromDesktopAppFunctionality [
-          set exploitChance (BreakOutFromDesktopApp * skillLevel) * 100000 ;; independent events
-         ;;show exploitChance
-          if random 100000 < exploitChance [
-            if skillLevel < 81 [ ;; if attacker is not very skilled, they share the vulnerability with the world
-              create-and-add-cve-to-node label random skillLevel currentPrivilege 4
+          ;; attacker sees connection to other app and tries to exploit it
+          if BreakOutFromDesktopAppFunc = true [
+            set exploitChance ( BreakOutFromDesktopApp * skillLevel ) / 100 ;; independent events
+            ifelse random-float 1 < exploitChance [
+              if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
+                create-and-add-cve-to-node label random skillLevel currentPrivilege 4
+              ]
+              ;;show ( word attackerName " on " label " exploited a custom PrivEsc vulnerability"  )
+              setCurrentPrivilege attackerName label 4  ; set priv to workstation
+            ][
+              ;;show ( word attackerName " on " label " FAILED to exploit a custom PrivEsc vulnerability"  )
             ]
-            ;;show ( word attackerName " on " label " exploited a custom PrivEsc vulnerability" )
-            setCurrentPrivilege attackerName label 4  ; set priv to workstation
           ]
-        ])
-
-         finishExploit attackerName
+          
+          
+          finishExploit attackerName
         ]
         isCustom = false[
-        ;; Check misconfigs
-        exploitMisconfigs potentialMisconfigs currentPrivilege skillLevel attackerName
-        ;; Check known vulnerabilities
-        exploitCVEs knownVulnerabilities currentPrivilege skillLevel attackerName
-
-        finishExploit attackerName
+          ;; Check misconfigs
+          exploitMisconfigs potentialMisconfigs currentPrivilege skillLevel attackerName
+          ;; Check known vulnerabilities
+          exploitCVEs knownVulnerabilities currentPrivilege skillLevel attackerName
+          
+          finishExploit attackerName
       ])
-
+      
 
     ]
     type1 = "app" [
@@ -1100,53 +1057,56 @@ to exploit [skillLevel currentPrivilege attackerName]
         ;; consider attackers second run
         ;; app is custom has a random chance to be
         let exploitChance 0
+        if
         ;; attacker sees connection to other server and tries to exploit it
-        (if functionalityConnectsToOtherApp [
-          set exploitChance SSRFexploitationRate * skillLevel * 100000 ;; independent events
-          ;;show "SSRF"
-          ;;show skillLevel
-          ;;show exploitChance
-          if random 100000 < exploitChance [
-            if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
-              create-and-add-cve-to-node label random skillLevel currentPrivilege 3
+            functionalityConnectsToOtherApp = true [
+              set exploitChance ( SSRFexploitationRate * skillLevel ) / 100 ;; independent events
+              ifelse random-float 1 < exploitChance [
+                 if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
+                  create-and-add-cve-to-node label random skillLevel currentPrivilege 3
+                  ]
+                 ;;show ( word attackerName " on " label " exploited a custom SSRF vulnerability"  )
+                  setCurrentPrivilege attackerName label 3
+              ][
+                  ;;show ( word attackerName " on " label " FAILED to exploit a custom SSRF vulnerability"  )
+              ]
             ]
-            ;;show ( word attackerName " on " label " exploited a custom SSRF vulnerability"  )
-            setCurrentPrivilege attackerName label 3
-          ]
-        ])
-
-        ;; attacker sees file upload functionality and tries to exploit it
-        (if functionalityFileUpload [
-          set exploitChance ( RCEexploitationRate * skillLevel ) * 100000 ;; independent events
-          ;;show "RCE"
-          ;;show skillLevel
-          ;;show exploitChance
-          if random 100000 < exploitChance [
-            ;;show exploitChance
-            ;;show RCEexploitationRate
-            ;;show label
-            if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
-              create-and-add-cve-to-node label random skillLevel currentPrivilege 4
+          if
+        ;;; attacker sees file upload functionality and tries to exploit it
+            functionalityFileUpload = true [
+              set exploitChance ( RCEexploitationRate * skillLevel ) / 100 ;; independent events
+              ifelse random-float 1 < exploitChance [
+                ;;show exploitChance
+                ;;show RCEexploitationRate
+                ;;show label
+               if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
+                  create-and-add-cve-to-node label random skillLevel currentPrivilege 4
+                  ]
+                   ;;show ( word attackerName " on " label " exploited a custom FileUpload vulnerability"  )
+                   setCurrentPrivilege attackerName label 4
+              ][
+                ;;show ( word attackerName " on " label " FAILED to exploit a custom FileUpload vulnerability"  )
+              ]
             ]
-            ;;show ( word attackerName " on " label " exploited a custom FileUpload vulnerability"  )
-            setCurrentPrivilege attackerName label 4
-          ]
-        ])
-
+          if
         ;; attacker sees database connection and tries to exploit it
-        (if functionalityConnectsToDatabase [
-          set exploitChance ( SQLIexploitationRate * skillLevel ) * 100000;; independent events
-          if random 100000 < exploitChance [
-            ;;show exploitChance
-            ;;show SQLIexploitationRate
-            ;;show label
-            if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
-              create-and-add-cve-to-node label random skillLevel currentPrivilege 5
+            functionalityConnectsToDatabase =  true [
+              set exploitChance ( SQLIexploitationRate * skillLevel ) / 100 ;; independent events
+              ifelse random-float 1 < exploitChance [
+                ;;show exploitChance
+                ;;show SQLIexploitationRate
+                ;;show label
+                if skillLevel < 81 [ ;; if attacker is not very skilled they share the vulnerability with the world
+                  create-and-add-cve-to-node label random skillLevel currentPrivilege 5
+                  ]
+                   ;;show ( word attackerName " on " label " exploited a custom Database Connection vulnerability"  )
+                   setCurrentPrivilege attackerName label 5
+              ][
+                   ;;show ( word attackerName " on " label " FAILED to exploit a custom Database Connection vulnerability"  )
+              ]
             ]
-            ;;show ( word attackerName " on " label " exploited a custom Database Connection vulnerability"  )
-            setCurrentPrivilege attackerName label 5
-          ]
-        ])
+          
+
          finishExploit attackerName
         ]
         isCustom = false [
@@ -1160,15 +1120,13 @@ to exploit [skillLevel currentPrivilege attackerName]
     ]
     type1 = "workstation" [
        set label-color red
-       ;;show "exploiting workstation"
         ;; Check misconfigs
         exploitMisconfigs potentialMisconfigs currentPrivilege skillLevel attackerName
         ;; Check known vulnerabilities
         exploitCVEs knownVulnerabilities currentPrivilege skillLevel attackerName
 
         finishExploit attackerName
-
-        set label-color white
+       set label-color white
 
 
     ]
@@ -1350,10 +1308,10 @@ to finishExploit [attackerName]
    let copyAccessLevels accessLevels
    let currentLocation one-of turtles-here
    let victimNeighbors link-neighbors
-  ;;show (word "Finished exploiting on : " nodeLabel)
+   ;;show (word "Finished exploiting on : " nodeLabel)
   ask one-of attackers with [ label = attackerName ] [
    let currentPriv table:get copyAccessLevels highest-priv-on-node list-of-access nodeLabel
-  ;;show (word "Resulted privilege on " nodeLabel " is " currentPriv)
+   ;;show (word "Resulted privilege on " nodeLabel " is " currentPriv)
    let copyList-of-access list-of-access
    (ifelse
        currentPriv = "user" [
@@ -1682,7 +1640,7 @@ to stuckHandler
   ][
     set stuckCount 0
   ]
-  if (stuckCount >= 3)[                                    ;;; Replace this with patience
+  if (stuckCount >= 2)[                                    ;;; Replace this with patience
     ;;show (word "Attacker got stuck more than thrice on " [label] of location " moving one node back")
       increment-child-table-score list-of-access [label] of location ;; score goes up
       set stuckCount 0
@@ -1703,7 +1661,7 @@ to stuckHandler
   set stuckDetector location
 
   (ifelse
-    (globalglobalStuckCount >= 5)[
+    (globalglobalStuckCount >= 2)[
       ;;show (word "Attacker globally globally got stuck on " globalStuckCount " time(s)")
       ;;show "Attacker has lost motivation and unfortunately our attacker dies"
       set diedAgents diedAgents + 1
@@ -1875,13 +1833,12 @@ to-report get-reachable-neighbors [attackerName]
            let appNeighbors ([out-link-neighbors] of currentNode) with [type1 = "app"]
            set reachable-neighbors (turtle-set reachable-neighbors appNeighbors)
            ]
-           if has-permission? attackerName [label] of currentNode "workstation" [ ;; IF HAVE WORKSTATION ;;;;; HERE HERE HERE
+           if has-permission? attackerName [label] of currentNode "workstation" [ ;; IF HAVE WORKSTATION
              ; Add workstation if we have workstation permission on desktop-app
              let workstationNeighbor ([link-neighbors] of currentNode) with [type1 = "workstation"]
              set reachable-neighbors (turtle-set reachable-neighbors workstationNeighbor)
            ]
       ]([type1] of currentNode = "workstation") [
-          ;;show list-of-access
            ; Can reach to desktop apps if have root can access other apps or databases connected to this app
            let DappNeighbors ([link-neighbors] of currentNode) with [type1 = "desktop-app"]
            set reachable-neighbors (turtle-set reachable-neighbors DappNeighbors)
@@ -1990,8 +1947,7 @@ to-report decide-best-move [list-of-possible-moves copy-list-of-access]
       report node
     ]
   ]
- ;;show list-of-possible-moves
- ;;show copy-list-of-access
+
   ; Check for server and app nodes with scores from 0 to 10
   let scores [0 1 2 3 4 5 6 7 8 9 10]  ; Define the score range
   foreach scores [
@@ -2061,7 +2017,6 @@ to step [attackerName]
           ;; decide which node is best to move
           let nextNode decide-best-move list-of-possible-moves list-of-access
           ;; move
-         ;;show nextNode
 
           move-node-final attackerName nextNode
         ]
@@ -2114,7 +2069,9 @@ to init-attackers-with-skill [num-attackers atSkill]
       set exploitedMisconfigs table:make
       set color red
       set skill atSkill  ; Skill between 1 and 100
-      ifelse random 30 = 0 [
+      ifelse random 20 = 0 [
+      set color green
+      set size 2
       set location one-of turtles with [isSource = true and internal = true]
       ][
         set location one-of turtles with [isSource = true and internal != true]
@@ -2127,8 +2084,6 @@ to init-attackers-with-skill [num-attackers atSkill]
       ]
       if atSkill < 40 and [label] of location = "Employee User" [
         set attackerLowSkill attackerLowSkill + 1
-        set color green
-        set size 2
       ]
       set startLabel [label] of location
       set prevLocation 0
@@ -2269,7 +2224,7 @@ to go
       init-attackers-with-skill 1 random 80 + 1 ;; attacker with random skill but not very high
       ]
       ]
-      companyScore >= 10 and companyScore < 20 [
+      companyScore >= 10 and companyScore < 20[
       if random 2 = 0 [
       init-attackers-with-skill 1 random 40 + 1 ;; two attackers with low skill
       ]
@@ -2277,7 +2232,7 @@ to go
       init-attackers-with-skill 1 random 80 + 1 ;; attacker with random skill but not very high
       ]
       ]
-      companyScore >= 20 and companyScore < 30 [
+      companyScore >= 20 and companyScore < 30[
        if random 2 = 0 [
       init-attackers-with-skill 1 random 50 + 1 ;; two attackers with possible medium skill
       ]
@@ -2285,7 +2240,7 @@ to go
       init-attackers-with-skill 1 random 100 + 1 ;; attacker with random skill
       ]
       ]
-      companyScore >= 30 and companyScore < 40 [
+      companyScore >= 30 and companyScore < 40[
       if random 4 = 0 [
       init-attackers-with-skill 1 random 70 + 1 ;; attacker with possible higher skill
       ]
@@ -2312,24 +2267,6 @@ to go
   update-vulnerabilities
 end
 
-to go-global-static
-  clear-all
-  reset-ticks
-  set newApp false
-  set isStatic true
-  set releaseScenario false
-  setup
-  while [ticks < 366] [
-   go
-  ]
-  print (word "Threat event 1, medium to high "threatEvent1 )
-  print (word "Attacker Medium to high skill " attackerModerateToHigh)
-  print (word "Threat event 2, state sponsored " threatEvent2)
-  print (word "Attacker state number " attackerState)
-  print ( word "Threat event 3, internal low " threatEvent3 )
-  print (word "Attacker Low skill " attackerLowSkill)
-
-end
 
 to go-global-dynamic
   clear-all
@@ -2349,4 +2286,22 @@ to go-global-dynamic
   print (word "Attacker Low skill " attackerLowSkill)
 
 end
-    
+
+to go-global
+  clear-all
+  reset-ticks
+  set newApp false
+  set isStatic true
+  set releaseScenario false
+  setup
+  while [ticks < 366] [
+   go
+  ]
+  print (word "Threat event 1, medium to high "threatEvent1 )
+  print (word "Attacker Medium to high skill " attackerModerateToHigh)
+  print (word "Threat event 2, state sponsored " threatEvent2)
+  print (word "Attacker state number " attackerState)
+  print ( word "Threat event 3, internal low " threatEvent3 )
+  print (word "Attacker Low skill " attackerLowSkill)
+
+end
