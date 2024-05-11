@@ -2273,7 +2273,7 @@ to go-global-dynamic
   reset-ticks
   set newApp false
   set isStatic false
-  set releaseScenario false
+  set releaseScenario true
   setup
   while [ticks < 366] [
    go
